@@ -41,4 +41,45 @@ router.post('/agregar', async( req, res, next ) =>{
   }
 });
 
+/* Para eliminar novedades */
+router.get('/eliminar/:id',async (req,res, next) => {
+  var id = req.params.id;
+  await novedadesModel.deleteNovedadById(id);
+  res.redirect('/admin/novedades');
+})
+
+/* Para mostrar el formulario listar una sola novedad x ID */
+
+router.get('/modificar/:id', async (req, res, next) => {
+  var id = req.params.id;
+  var novedades = await novedadesModel.getNovedadById(id);
+
+  res.render('admin/modificar',{
+    layout: 'admin/layout',
+    novedades
+  })
+})
+/* Para modificar la novedad */
+router.post('/modificar', async(req, res, next) => {
+  
+try{ 
+  var obj = {
+    titulo: req.body.titulo,
+    subtitulo: req.body.subtitulo,
+    cuerpo: req.body.cuerpo
+  }
+
+  await novedadesModel.modifivarNovedadesById(obj, req.body.id);
+  res.redirect('/admin/novedades');
+} catch (error) {
+  res.render('admin/modificar', {
+    layout: 'admin/layout',
+    error:true,
+    message: ' No se modifico la novedad'
+  })
+}
+
+})
+
+
 module.exports = router;
